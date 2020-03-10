@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Administrator Log-in</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
+        <!--jQuery library--> 
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!--Latest compiled and minified JavaScript--> 
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+       <link href="Admin.css" rel="stylesheet" type="text/css"/> 
+       <script src="./admin.build.js"></script>
+       <script>
+           window.onload = function()   {
+               document.getElementById('submit').addEventListener('click', function()   {
+                   var id = parseInt(document.getElementById('sid').value);
+                   var pwd = document.getElementById('password').value;
+                   var adminObj = new Admin();
+                   var data = adminObj.getCredentials();
+                   if(data.get('id') == id) {
+                       if(data.get('pwd') == pwd) {
+                           window.location.href = 'index.html';
+                       }
+                       else {
+                           alert('Wrong Password');
+                       }
+                   }
+                   else { alert('Wrong ID');}
+               }, true);
+           }
+       </script>
+</head>      
+<body background="bgimage.jpg">      
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>                        
+            </button>
+            <a class="navbar-brand" href="#">School Admin Login</a>
+          </div>
+        </div>
+	  </nav>
+        <br><br><br><br>
+        <div class="container panel panel-primary">
+           <div class="panel-body">
+              <center>
+               <div class="form-group">
+                  <input type="text" name="email" id="sid" class="form-control" style="width: 25%" placeholder="Admin-ID" required/>
+               </div>
+               <div class="form-group">
+                  <input type="password" name="password" id="password" class="form-control" style="width: 25%" placeholder="Password" required/>
+               </div> 
+               <div class="form-group">
+                   <input type="submit" id="submit" value="Sign in" class="btn btn-primary"/>
+               </div>
+               </center>
+           </div>
+        </div> 
+</body>
+</html>        

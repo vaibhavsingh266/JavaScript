@@ -1,0 +1,21 @@
+.navbar-header {
+    float: left;
+    padding: 15px;
+    text-align: center;
+    width: 100%;
+}
+.navbar-brand {float:none;}
+
+.btn:hover
+{
+    background-image:none !important;
+    background-color:#5cb85c !important;
+}
+.panel-body {
+    background: none;
+}
+
+.panel.panel-primary{
+    background-color: rgba(245, 245, 245, 0);
+    border: 0px;
+}

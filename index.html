@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+.active-cyan-4 input[type=text]:focus:not([readonly]) {
+  border: 1px solid #4dd0e1;
+  box-shadow: 0 0 0 1px #4dd0e1;
+}
+.active-cyan-3 input[type=text] {
+  border: 1px solid #4dd0e1;
+  box-shadow: 0 0 0 1px #4dd0e1;
+}
+  </style>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="./admin.build.js"></script>
+	<script>
+		window.onload	= function()	{
+      adminobj = new Admin();
+      var students = adminobj.getStudent();      
+      loadTable(students);
+
+      document.getElementById('search').addEventListener('keyup', function()  {
+            var data = "";
+            if(this.value == "")  {
+              data = adminobj.getStudent();
+              loadTable(data);
+            }
+            else  {              
+              if(document.getElementById('certOption').checked) {
+                  data = adminobj.search(this.value);
+              }
+              else  {
+                  data = adminobj.search(this.value, "spach");
+              }
+              loadTable(data);
+            }
+      }, true);
+
+		  document.getElementById('addstud').addEventListener('click', function() {
+			var student = {
+				Name: document.getElementById('name').value,
+        Email: document.getElementById('email').value,
+        Password: document.getElementById('password').value,
+        Gender: document.getElementById('lstgender').value,
+				Address: "-",
+				Certification: [],
+				SpAch: []
+      };
+
+      
+
+      var check = adminobj.addStudent(student);
+      if(!check)  
+        alert('Put Unique Email ID');
+      var data = adminobj.getStudent();
+      loadTable(data);
+
+    }, true);
+  }
+  
+  function loadTable(students)  {
+      if(students.size == 0)
+        return;
+      document.getElementById('thead').innerHTML = "<th>Id</th><th>Name</th><th>Email</th><th>Address</th><th>Gender</th><th>Certification</th><th>Special Achievement</th><th></th>";
+      tr = "";
+      students.forEach((v,i) =>  {
+        tr += "<tr><td>"+i+"</td><td>"+v.Name+"</td><td>"+v.Email+"</td><td>"+v.Address+"</td>"+"<td>"+v.Gender+"</td>";
+        if(v.Certification.length > 0) {
+          var values = v.Certification;
+          tr += "<td>";
+          for(var i in values)
+            tr +=  values[i] + "<br>";
+          tr += "</td>"
+        }
+        else  { tr += "<td>-</td>";} 
+        if(v.SpAch.length > 0) {
+          var values = v.SpAch;
+          tr += "<td>";
+          for(var i in values)
+            tr +=  values[i] + "<br>";
+          tr += "</td>"
+        }
+        else  { tr += "<td>-</td>";} 
+        tr += `<td><button onclick="deleteSt('${i}')" class="btn btn-primary">Delete</button></td></tr>`;
+      });
+      document.getElementById('tbody').innerHTML = tr;
+    }
+
+  function deleteSt(id) {
+        var students = adminobj.deleteStudent(id);
+        loadTable(students);
+    }
+    function ClearFields() {
+document.getElementById("name").value = "";
+document.getElementById("password").value = "";
+document.getElementById("email").value = "";
+}
+  </script>
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>                        
+            </button>
+            <a class="navbar-brand" href="#">Add Student Details</a>
+          </div>
+        </div>
+    </nav>
+    <div class="container" id="info">
+          <div class="form-group row">
+            <label for="Name" class="col-lg-1 col-form-label">Name</label>
+            <div class="col-lg-4">
+              <input type="text" class="form-control" id="name" placeholder="Name">
+            </div>
+        </div>
+          <div class="form-group row">
+            <label for="Email" class="col-lg-1 col-form-label">Email</label>
+            <div class="col-lg-4">
+              <input type="email" class="form-control" id="email" placeholder="Email">
+			    </div>
+          </div>
+          <div class="form-group row">
+            <label for="Email" class="col-lg-1 col-form-label">Password</label>
+            <div class="col-lg-4">
+              <input type="password" class="form-control" id="password" placeholder="Password">
+			    </div>
+          </div>
+          <div class="form-group row">
+            <label for="Gender" class="col-lg-1 col-form-label">Gender</label>
+            <div class="col-lg-2">
+              <select class="form-control" id="lstgender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Others</option>
+              </select>
+			    </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-lg-2">
+              <input type="button" id="addstud" value="Add" class="btn btn-primary" />
+            </div>
+            <div class="col-lg-2">
+              <input type="button" onclick="ClearFields();" value="Reset" class="btn btn-primary"></button>
+            </div>
+     	 </div>
+    </div>
+    <div class="container" id="records" style="margin-top: 30px;">
+      <div class="custom-control custom-radio">
+        <input type="radio" class="custom-control-input" name="selectOption" id="certOption"  checked><label class="custom-control-label">Certification</label>
+        <input type="radio" class="custom-control-input" name="selectOption" id="spachOption" ><label class="custom-control-label">Achievement</label>
+    </div>
+    <div class="float-right">
+      <form class="form-inline active-cyan-3 active-cyan-4">
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <input type="text" id="search" class="form-control form-control-md"  placeholder="Search" >
+      </form>
+    </div>
+    <table class="table table-bordered text-center" style="margin-top: 20px;">
+      <thead id="thead">
+        
+      </thead>
+      <tbody id="tbody">
+      <tbody>
+    </table>
+    </div>      
+</body>
+</html>
+
+
+
+
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="./app.js"></script>
+    <script>
+
+    </script>
+</head>
+<body>
+  
+</body>
+</html>
+
+
+
+
+	
+
+
+	<div id="add" class="modal fade" role="dialog">
+<div class="modal-dialog">
+
+<div class="modal-content">
+  <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	<h4 class="modal-title">Add Record</h4>
+  </div>
+	<form action="/add" method="POST">
+  <div class="modal-body">
+	<input type="text" name="name" class="form-control form-control-lg" placeholder="Name" required/><br>
+	<input type="text" name="email" class="form-control form-control-lg" placeholder="Email" required/><br>
+	<input type="text" name="dob" class="form-control form-control-lg" placeholder="DOB" required/><br>
+  </div>
+  <div class="modal-footer">
+	<input type="submit" class="btn btn-danger"  />
+  </div>
+	</form>
+</div>
+</div>
+</div>
+
+
+
+
+			<div id="edit" class="modal fade" role="dialog">
+<div class="modal-dialog">
+
+<div class="modal-content">
+  <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	<h4 class="modal-title">Edit Record</h4>
+  </div>
+	<form action="/edit" method="POST">
+  <div class="modal-body">
+	<input type="text" name="id" class="form-control form-control-lg" placeholder="Id" required/><br>
+	<input type="text" name="email" class="form-control form-control-lg" placeholder="Email" required/><br>
+	  <input type="text" name="name" class="form-control form-control-lg" placeholder="Name" required/><br>
+	  <input type="text" name="dob" class="form-control form-control-lg" placeholder="DOB" required/><br>
+  </div>
+  <div class="modal-footer">
+	<input type="submit" class="btn btn-danger" />
+  </div>
+	</form>
+</div>
+</div></div>
+
+	<div id="delete" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+		<div class="modal-content">
+  <div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal">&times;</button>
+	<h4 class="modal-title">Delete Record</h4>
+  </div>
+			<form action="/delete" method="POST">
+  <div class="modal-body">
+	<input type="text" name="id" class="form-control form-control-lg" placeholder="Id" required/><br>
+	<input type="text" name="email" class="form-control form-control-lg" placeholder="Email" required/><br>
+  </div>
+  <div class="modal-footer">
+	<input type="submit" class="btn btn-danger" />
+  </div>
+			</form>
+  </div>
+</div>
+</div>
+	</div>-->
